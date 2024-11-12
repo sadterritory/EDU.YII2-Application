@@ -1,0 +1,44 @@
+services:
+
+  frontend:
+    build: frontend #Сервис будет построен на основе Dockerfile, который лежит в директории frontend
+    ports:
+      - 20081:80
+    volumes:
+      # Используем кэш Composer из локальной системыЮ что позволит ускорить сборку и избежит повторной сборки зависимостей
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+
+  backend:
+    build: backend #Сервис будет построен на основе Dockerfile, который лежит в директории backend
+    ports:
+      - 21081:80
+    volumes:
+      # Используем кэш Composer из локальной системыЮ что позволит ускорить сборку и избежит повторной сборки зависимостей
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+#Подключаем mySQL
+  mysql:
+    image: mysql:5.7
+    #Задаем переменные окружения
+    environment:
+      - MYSQL_ROOT_PASSWORD=verysecret
+      - MYSQL_DATABASE=yii2advanced
+      - MYSQL_USER=yii2advanced
+      - MYSQL_PASSWORD=secret
+
+#Подключаем phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    #Задаем переменные окружения
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=yii2advanced
+      - PMA_PASSWORD=secret
+    #Прописываем зависимость от mySQL (mySQL гарантированно будет запущен раньше чем phpMyAdmin)
+    depends_on:
+      - mysql
