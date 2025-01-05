@@ -16,12 +16,6 @@ class UrlController extends ActiveController
         //$data = $this->request->post();
         $params = $request->bodyParams;
         return $params;
-        /*foreach ($data as $url){
-            if($entity = UrlStatus::findUrl($url)){
 
-            } else {
-
-            }
-        }*/
     }
 }
