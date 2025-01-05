@@ -1,8 +1,8 @@
 <?php
 
-namespace app\models;
+namespace common\models;
 
-use Yii;
+/*The model is in common because it can be used in both back and front*/
 
 /**
  * This is the model class for table "url_status".
@@ -19,7 +19,7 @@ class UrlStatus extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName() : string
     {
         return 'url_status';
     }
@@ -27,14 +27,14 @@ class UrlStatus extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             [['hash_string', 'created_ad', 'updated_ad', 'url'], 'required'],
-            [['created_ad', 'updated_ad'], 'safe'],
+            [['created_ad', 'updated_ad'], 'datetime'],
             [['status_code', 'query_count'], 'integer'],
             [['hash_string'], 'string', 'max' => 32],
-            [['url'], 'string', 'max' => 255],
+            [['url'], 'http'],
             [['hash_string'], 'unique'],
         ];
     }
@@ -42,7 +42,7 @@ class UrlStatus extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels() : array
     {
         return [
             'hash_string' => 'Hash String',
@@ -52,5 +52,16 @@ class UrlStatus extends \yii\db\ActiveRecord
             'status_code' => 'Status Code',
             'query_count' => 'Query Count',
         ];
+    }
+
+    /**
+     * @param string $url The URL to be found
+     * @return string The found url
+     * The method find your URL and return it
+     */
+
+    public static function findUrl(string $url) : string
+    {
+        return $url;
     }
 }

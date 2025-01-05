@@ -21,13 +21,6 @@ class m241114_155408_url_status extends Migration
             "query_count"=>$this->integer()
         ]);
 
-        $this->createIndex(
-            'url_status_hash_string_uindex',
-            'url_status',
-            'hash_string',
-            'true'
-        );
-
         $this->addPrimaryKey(
             'pk-url_status-hash_string',
             'url_status',
@@ -41,29 +34,9 @@ class m241114_155408_url_status extends Migration
     public function safeDown()
     {
 
-        $this->dropIndex(
-            'url_status_hash_string_uindex',
-            'url_status'
-        );
-
         $this->dropTable(
             'url_status'
         );
 
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m241114_155408_url_status cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }
