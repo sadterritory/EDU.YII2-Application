@@ -47,16 +47,6 @@ return [
             ],
         ],
 
-
-        /*'urlManager' => [
-            'enablePrettyUrl' => true,
-//            'enableStrictParsing' => true,
-            'showScriptName' => false,
-            'rules' => [
-                ['checkStatus' => 'url/hello'],
-            ]
-        ],*/
-
     ],
     'params' => $params,
 ];
