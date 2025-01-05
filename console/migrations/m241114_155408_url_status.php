@@ -33,10 +33,8 @@ class m241114_155408_url_status extends Migration
      */
     public function safeDown()
     {
-
         $this->dropTable(
             'url_status'
         );
-
     }
 }
