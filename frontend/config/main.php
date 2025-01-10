@@ -1,4 +1,5 @@
 <?php
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -13,10 +14,9 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-frontend',
-//            'parsers' => [
-//                'application/json' => 'yii\web\JsonParser',
-//            ],
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -41,9 +41,11 @@ return [
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,
+            //todo:404 here
+            //'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                'checkStatus' => 'url/hello',
+                'checkStatus' => 'url/check-status',
             ],
         ],
 

@@ -15,7 +15,7 @@ services:
     ports:
       - 21081:80
     volumes:
-      # Используем кэш Composer из локальной системыЮ что позволит ускорить сборку и избежит повторной сборки зависимостей
+      # Используем кэш Composer из локальной системы, что позволит ускорить сборку и избежит повторной сборки зависимостей
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       # Mount source-code for development
       - ./:/app

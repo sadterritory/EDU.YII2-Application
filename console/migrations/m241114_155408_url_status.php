@@ -14,8 +14,8 @@ class m241114_155408_url_status extends Migration
     {
         $this->createTable("url_status", [
             "hash_string" => $this->string(32)->notNull(),
-            "created_ad"=> $this->dateTime()->notNull(),
-            "updated_ad"=>$this->dateTime()->notNull(),
+            "created_at"=> $this->dateTime()->notNull(),
+            "updated_at"=>$this->dateTime()->notNull(),
             "url"=>$this->string(255)->notNull(),
             "status_code"=>$this->integer(),
             "query_count"=>$this->integer()
