@@ -4,7 +4,9 @@ namespace common\models;
 
 /*The model is in common because it can be used in both back and front*/
 
+use Cassandra\Date;
 use DateTime;
+use DateTimeZone;
 use Exception;
 
 /**
@@ -19,48 +21,42 @@ use Exception;
  */
 class UrlStatus extends \yii\db\ActiveRecord
 {
+    public static DateTimeZone $dateTimeZone;
+
+    public function __construct()
+    {
+        $this->dateTimeZone = new DateTimeZone('Asia/Krasnoyarsk');
+    }
 
     /**
-     * @param string $url received URL
      * If url data is available, actions are performed with the status_code and the pageview counter.
      * In case of absence, a new record is created in the database.
+     *
+     * @param string $url received URL
      * @throws \yii\db\Exception
      * @throws Exception
      */
-    public static function findUrl(string $url): array
+    public static function validateUrl(string $url): array
     {
         $statusCode = null;
-        $hash = md5($url);
         $result = self::find()
-            ->where(['hash_string' => $hash])
+            ->where(['hash_string' => self::getHash($url)])
             ->one();
+
         if ($result !== null) {
-            $currentDateTime = new \DateTime();
-            $updatedAt = new DateTime($result->updated_at);
-            $pastTense = $updatedAt->getTimestamp() - $currentDateTime->getTimestamp();
-            if ($pastTense > 600) {
-                $result->updateCounters(['query_count' => 1]);
-                $result->updated_at = (new \DateTime())->format('Y-m-d H:i:s');
+            $currentDateTime = new DateTime('now', self::$dateTimeZone);
+            $updatedAt = new DateTime($result->updated_at, self::$dateTimeZone);
+            if ($currentDateTime->getTimestamp() - $updatedAt->getTimestamp() > 600) {
+                $result->updated_at = (new DateTime('now', self::$dateTimeZone))->format('Y-m-d H:i:s');
                 $result->status_code = self::getStatus($url);
+                $statusCode = $result->status_code;
             } else {
-                $result->updateCounters(['query_count' => 1]);
                 $statusCode = $result->status_code;
             }
+            $result->updateCounters(['query_count' => 1]);
+            $result->save();
         } else {
-            $newData = new self();
-            $newData->hash_string = $hash;
-            $newData->created_at = (new \DateTime())->format('Y-m-d H:i:s');
-            $newData->updated_at = (new \DateTime())->format('Y-m-d H:i:s');
-            $newData->status_code = self::getStatus($url);
-            $newData->url = $url;
-            $newData->query_count = 1;
-            if (!$newData->save()) {
-                throw new Exception('Error with saving data: ' . implode(', ', $newData->getFirstErrors()));
-            }
-            if($newData->status_code == null) {
-                throw new \yii\db\Exception('Your url:' . $url);
-            }
-            $statusCode = $newData->status_code;
+            $statusCode = self::createNewNote($url);
         }
         return [
             $url => ["status_code" => $statusCode],
@@ -68,9 +64,47 @@ class UrlStatus extends \yii\db\ActiveRecord
     }
 
     /**
+     * Creates a new note with the specified URL.
+     *
+     * This method creates a new note object and sets its properties.,
+     * such as hash string, creation date, update date, status and URL,
+     * and then saves it to the database.
+     *
+     * @param string $url The URL for which the note is being created.
+     * @return int The status code associated with the note.
+     * @throws Exception If an error occurs when saving data.
+     */
+    public static function createNewNote(string $url): int
+    {
+        $newData = new self();
+        $newData->hash_string = self::getHash($url);
+        $newData->created_at = (new DateTime('now', self::$dateTimeZone))->format('Y-m-d H:i:s');
+        $newData->updated_at = (new DateTime('now', self::$dateTimeZone))->format('Y-m-d H:i:s');
+        $newData->status_code = self::getStatus($url);
+        $newData->url = $url;
+        $newData->query_count = 1;
+        if (!$newData->save()) {
+            throw new Exception('Error with saving data: ' . implode(', ', $newData->getFirstErrors()));
+        }
+        return $newData->status_code;
+    }
+
+    /**
+     * The method return md5 code of url
+     *
+     * @param string $url received URL
+     * @return md5-code
+     */
+    public static function getHash(string $url): string
+    {
+        return md5($url);
+    }
+
+    /**
+     * The method gets the status code of the url. In case of a timeout, the status code is set to 0
+     *
      * @param string $url received URL
      * @return http-code (for example: 404, 505, 200)
-     * The method gets the status code of the url. In case of a timeout, the status code is set to 0
      */
 
     public static function getStatus(string $url, int $timeout = 5): ?int
@@ -91,6 +125,29 @@ class UrlStatus extends \yii\db\ActiveRecord
             $statusCode = 0;
         }
         return $statusCode;
+    }
+
+    /**
+     * Set timezone
+     *
+     * @param DateTimeZone $zone The time zone object that needs to be installed.
+     * @return void
+     */
+    public function setDateTimeZone(DateTimeZone $zone)
+    {
+        self::$dateTimeZone = $zone;
+    }
+
+    /**
+     * Gets a time zone.
+     *
+     * This method returns the current timezone set for the class.
+     *
+     * @return DateTimeZone Timezone object.
+     */
+    public function getDateTimeZone(): DateTimeZone
+    {
+        return self::$dateTimeZone;
     }
 
     /**

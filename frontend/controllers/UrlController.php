@@ -21,7 +21,7 @@ class UrlController extends ActiveController
         $urls = Yii::$app->request->post('url');
         $responses = [];
         foreach ($urls as $url) {
-            $responses[] = $this->modelClass::findUrl($url);
+            $responses[] = $this->modelClass::validateUrl($url);
         }
         return $responses;
     }
