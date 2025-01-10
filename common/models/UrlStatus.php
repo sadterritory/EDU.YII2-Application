@@ -38,7 +38,7 @@ class UrlStatus extends \yii\db\ActiveRecord
             $currentDateTime = new \DateTime();
             $updatedAt = new DateTime($result->updated_at);
             $pastTense = $updatedAt->getTimestamp() - $currentDateTime->getTimestamp();
-            if ($pastTense > 1) {
+            if ($pastTense > 600) {
                 $result->updateCounters(['query_count' => 1]);
                 $result->updated_at = (new \DateTime())->format('Y-m-d H:i:s');
                 $result->status_code = self::getStatus($url);
