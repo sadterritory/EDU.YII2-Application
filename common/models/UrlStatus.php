@@ -4,7 +4,6 @@ namespace common\models;
 
 /*The model is in common because it can be used in both back and front*/
 
-use Cassandra\Date;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -21,11 +20,13 @@ use Exception;
  */
 class UrlStatus extends \yii\db\ActiveRecord
 {
-    public static DateTimeZone $dateTimeZone;
+    public static ?DateTimeZone $dateTimeZone = null;
 
-    public function __construct()
+    public static function initDateTimeZone(): void
     {
-        $this->dateTimeZone = new DateTimeZone('Asia/Krasnoyarsk');
+        if (self::$dateTimeZone === null) {
+            self::$dateTimeZone = new DateTimeZone('Asia/Krasnoyarsk');
+        }
     }
 
     /**
@@ -38,6 +39,9 @@ class UrlStatus extends \yii\db\ActiveRecord
      */
     public static function validateUrl(string $url): array
     {
+        if (self::$dateTimeZone === null) {
+            self::initDateTimeZone();
+        }
         $statusCode = null;
         $result = self::find()
             ->where(['hash_string' => self::getHash($url)])

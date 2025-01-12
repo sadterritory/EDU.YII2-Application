@@ -12,6 +12,7 @@ class UrlController extends ActiveController
 
     /**
      * @return responses array of urls and statuses
+     *
      * We turn to the model to check for the url and perform actions with the data provided by the endpoint
      * /checkStatus call.
      */

@@ -34,6 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "console\\": "console/",
             "common\\tests\\": ["common/tests/", "common/tests/_support"],
             "backend\\tests\\": ["backend/tests/", "backend/tests/_support"],
             "frontend\\tests\\": ["frontend/tests/", "frontend/tests/_support"]
