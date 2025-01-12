@@ -16,7 +16,7 @@ class UrlController extends ActiveController
      * We turn to the model to check for the url and perform actions with the data provided by the endpoint
      * /checkStatus call.
      */
-    public function actionCheckStatus() : array
+    public function actionCheckStatus(): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $urls = Yii::$app->request->post('url');

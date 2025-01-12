@@ -1,10 +1,12 @@
 <?php
 
 namespace common\services;
+
 use common\models\UrlStatus;
 use DateTime;
 
-class UrlStatistics {
+class UrlStatistics
+{
 
     /**
      * Retrieves an array of URLs updated in the last 24 hours.
