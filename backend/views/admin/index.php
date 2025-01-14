@@ -10,11 +10,26 @@ $this->title = 'Admin panel';
 ?>
 
 <div class="site-admin">
+
+    <?php $form = \yii\widgets\ActiveForm::begin([
+        'method' => 'post',
+        'action' => ['csv/discharge'],
+    ]); ?>
+
+    <?= \yii\helpers\Html::hiddenInput('url', Yii::$app->request->get('UrlStatusFilter')['url'] ?? '') ?>
+    <?= \yii\helpers\Html::hiddenInput('status_code', Yii::$app->request->get('UrlStatusFilter')['status_code'] ?? '') ?>
+    <?= \yii\helpers\Html::hiddenInput('lastDay', Yii::$app->request->get('lastDay') ?? '') ?>
+    <?= \yii\helpers\Html::hiddenInput('sort', Yii::$app->request->get('sort') ?? '') ?>
+
+    <div class="form-group myButton">
+        <?= \yii\helpers\Html::submitButton('Discharge CSV', ['class' => 'btn btn-primary']) ?>
+    </div>
+
+    <?php \yii\widgets\ActiveForm::end(); ?>
+
     <div class="jumbotron text-center bg-transparent">
         <h1 class="display-4">Url_status table</h1>
     </div>
-
-<!--    <p><a class="btn btn-lg btn-success" onclick="" ">Get started with Yii</a></p>-->
 
     <?php $form = \yii\widgets\ActiveForm::begin([
         'method' => 'get',
