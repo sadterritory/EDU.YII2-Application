@@ -4,9 +4,11 @@ namespace common\models;
 
 /*The model is in common because it can be used in both back and front*/
 
+use backend\models\UrlStatusFilter;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use yii\data\Sort;
 
 /**
  * This is the model class for table "url_status".
@@ -22,11 +24,51 @@ class UrlStatus extends \yii\db\ActiveRecord
 {
     public static ?DateTimeZone $dateTimeZone = null;
 
+    /**
+     * Initializes the static $DateTimeZone property if it has not been initialized yet.
+     * Sets the time zone 'Asia/Krasnodar'.
+     */
     public static function initDateTimeZone(): void
     {
         if (self::$dateTimeZone === null) {
             self::$dateTimeZone = new DateTimeZone('Asia/Krasnoyarsk');
         }
+    }
+
+    /**
+     * Returns all data from the table associated with the model.
+     *
+     * @return array is an array of all records from the table.
+     */
+    public static function getAllData(): array
+    {
+        return self::find()->all();
+    }
+
+    /**
+     * Returns filtered data based on the passed filtering model and sorting parameters.
+     *
+     * @param UrlStatusFilter $filterModel is a filtering model containing parameters for filtering data.
+     * @param Sort|null $sort Sorting object. If passed, the data will be sorted according to its settings.
+     * @return array is an array of filtered and sorted data.
+     */
+    public static function getFilteredData($filterModel, $sort = null) : array
+    {
+        $query = self::find();
+
+        if (!empty($filterModel->url)) {
+            $query->andWhere(['like', 'url', $filterModel->url]);
+        }
+
+        if (!empty($filterModel->status_code)) {
+            $query->andWhere(['status_code' => $filterModel->status_code]);
+        }
+
+        if ($sort !== null) {
+            $query->orderBy($sort->orders);
+        }
+
+        return $query->all();
     }
 
     /**
