@@ -21,7 +21,7 @@ class CsvService
      * @param bool $lastDay Whether to filter data for the last day.
      * @return void
      */
-    public static function saveCsv(string $url, int $statusCode, $sortAttribute, bool $lastDay = false) : void
+    public static function saveCsv(string $url, int $statusCode, $sortAttribute, bool $lastDay = false): void
     {
         $filterModel = new UrlStatusFilter();
         $filterModel->url = $url;
@@ -59,7 +59,7 @@ class CsvService
      * @param array $data The data to be exported to the CSV file.
      * @return void
      */
-    private static function generateCsv(array $data) : void
+    private static function generateCsv(array $data): void
     {
         date_default_timezone_set('Asia/Krasnoyarsk');
         $fileName = 'export_' . date('Y-m-d_H-i-s') . '.csv';

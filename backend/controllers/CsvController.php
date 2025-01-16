@@ -19,7 +19,7 @@ class CsvController extends Controller
      *
      * @return void
      */
-    public function actionDischarge() : void
+    public function actionDischarge(): void
     {
         $url = Yii::$app->request->post('url', '');
         $statusCode = Yii::$app->request->post('status_code', '');

@@ -52,7 +52,7 @@ class UrlStatus extends \yii\db\ActiveRecord
      * @param Sort|null $sort Sorting object. If passed, the data will be sorted according to its settings.
      * @return array is an array of filtered and sorted data.
      */
-    public static function getFilteredData($filterModel, $sort = null) : array
+    public static function getFilteredData(UrlStatusFilter $filterModel, Sort $sort = null): array
     {
         $query = self::find();
 
