@@ -25,6 +25,37 @@ class UrlStatus extends \yii\db\ActiveRecord
     public static ?DateTimeZone $dateTimeZone = null;
 
     /**
+     * {@inheritdoc}
+     */
+    public function rules(): array
+    {
+        return [
+            [['hash_string', 'created_at', 'updated_at', 'url'], 'required'],
+            [['created_at', 'updated_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
+            [['status_code', 'query_count'], 'integer'],
+            [['hash_string'], 'string', 'max' => 32],
+            [['url'], 'url'],
+            [['hash_string'], 'unique'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'hash_string' => 'Hash String',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+            'url' => 'Url',
+            'status_code' => 'Status Code',
+            'query_count' => 'Query Count',
+        ];
+    }
+
+
+    /**
      * Initializes the static $DateTimeZone property if it has not been initialized yet.
      * Sets the time zone 'Asia/Krasnodar'.
      */
@@ -179,7 +210,7 @@ class UrlStatus extends \yii\db\ActiveRecord
      * @param DateTimeZone $zone The time zone object that needs to be installed.
      * @return void
      */
-    public function setDateTimeZone(DateTimeZone $zone)
+    public function setDateTimeZone(DateTimeZone $zone): void
     {
         self::$dateTimeZone = $zone;
     }
@@ -203,36 +234,5 @@ class UrlStatus extends \yii\db\ActiveRecord
     {
         return 'url_status';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rules(): array
-    {
-        return [
-            [['hash_string', 'created_at', 'updated_at', 'url'], 'required'],
-            [['created_at', 'updated_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
-            [['status_code', 'query_count'], 'integer'],
-            [['hash_string'], 'string', 'max' => 32],
-            [['url'], 'url'],
-            [['hash_string'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels(): array
-    {
-        return [
-            'hash_string' => 'Hash String',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-            'url' => 'Url',
-            'status_code' => 'Status Code',
-            'query_count' => 'Query Count',
-        ];
-    }
-
 
 }

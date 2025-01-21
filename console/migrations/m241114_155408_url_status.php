@@ -10,15 +10,15 @@ class m241114_155408_url_status extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeUp()
+    public function safeUp(): void
     {
-        $this->createTable("url_status", [
-            "hash_string" => $this->string(32)->notNull(),
-            "created_at"=> $this->dateTime()->notNull(),
-            "updated_at"=>$this->dateTime()->notNull(),
-            "url"=>$this->string(255)->notNull(),
-            "status_code"=>$this->integer(),
-            "query_count"=>$this->integer()
+        $this->createTable('url_status', [
+            'hash_string' => $this->string(32)->notNull(),
+            'created_at' => $this->dateTime()->notNull(),
+            'updated_at' => $this->dateTime()->notNull(),
+            'url' => $this->string(255)->notNull(),
+            'status_code' => $this->integer(),
+            'query_count' => $this->integer()
         ]);
 
         $this->addPrimaryKey(
@@ -31,7 +31,7 @@ class m241114_155408_url_status extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeDown()
+    public function safeDown(): void
     {
         $this->dropTable(
             'url_status'

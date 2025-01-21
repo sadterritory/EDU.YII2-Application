@@ -1,62 +1,48 @@
 services:
 
   frontend:
-    build: frontend #Сервис будет построен на основе Dockerfile, который лежит в директории frontend
+    build: frontend
     ports:
       - 20081:80
     volumes:
-      # Используем кэш Composer из локальной системыЮ что позволит ускорить сборку и избежит повторной сборки зависимостей
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
       - ./:/app
+    environment:
+      - DB_HOST = ${DB_HOST}
+      - DB_USER = ${DB_USER}
+      - DB_PASSWORD = ${DB_PASSWORD}
+      - DB_NAME = ${DB_NAME}
     depends_on:
       - mysql
-#    networks:
-#      - yii-network
 
   backend:
-    build: backend #Сервис будет построен на основе Dockerfile, который лежит в директории backend
+    build: backend
     ports:
       - 21081:80
     volumes:
-      # Используем кэш Composer из локальной системы, что позволит ускорить сборку и избежит повторной сборки зависимостей
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
       - ./:/app
+    environment:
+      - DB_HOST = ${DB_HOST}
+      - DB_USER = ${DB_USER}
+      - DB_PASSWORD = ${DB_PASSWORD}
+      - DB_NAME = ${DB_NAME}
     depends_on:
       - mysql
-#    networks:
-#      - yii-network
-#Подключаем mySQL
   mysql:
     image: mysql:5.7
-#    ports:
-#      - "3306:3306"
-    #Задаем переменные окружения
     environment:
-      - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_DATABASE=yii2advanced
-      - MYSQL_USER=yii2advanced
-      - MYSQL_PASSWORD=secret
-#    networks:
-#      - yii-network
-
-#Подключаем phpMyAdmin
+      - MYSQL_ROOT_PASSWORD = ${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE = ${DB_NAME}
+      - MYSQL_USER = ${DB_USER}
+      - MYSQL_PASSWORD = ${DB_PASSWORD}
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
       - 8080:80
-    #Задаем переменные окружения
     environment:
-      - PMA_HOST=mysql
-      - PMA_USER=yii2advanced
-      - PMA_PASSWORD=secret
-    #Прописываем зависимость от mySQL (mySQL гарантированно будет запущен раньше чем phpMyAdmin)
+      - PMA_HOST = ${DB_HOST}
+      - PMA_USER = ${DB_USER}
+      - PMA_PASSWORD = ${DB_PASSWORD}
     depends_on:
       - mysql
-#    networks:
-#      - yii-network
-
-#networks:
-#   yii-network:
-#     driver: bridge

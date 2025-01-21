@@ -27,7 +27,7 @@ class CheckStatusController extends Controller
         if ($data) {
             $this->stdout("[+] Found urls:\n", Console::BOLD, Console::FG_GREEN);
             foreach ($data as $url) {
-                $this->stdout("Url: {" . $url->url . "} | {" . $url->status_code . "}");
+                $this->stdout("Url: {$url->url} | {$url->status_code}\n");
             }
         } else {
             $this->stdout("[-] Urls not found\n", Console::BOLD, Console::FG_RED);
