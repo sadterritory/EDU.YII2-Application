@@ -21,10 +21,7 @@ class UrlStatistics
      */
     public static function getUrlsByLastDay(): array
     {
-        if (UrlStatus::$dateTimeZone === null) {
-            UrlStatus::initDateTimeZone();
-        }
-        $passedTime = (new DateTime('now', UrlStatus::$dateTimeZone))->modify('-24 hours')->format('Y-m-d H:i:s');
+        $passedTime = (new DateTime())->modify('-24 hours')->format('Y-m-d H:i:s');
         return UrlStatus::find()
             ->where(['>=', 'updated_at', $passedTime])
             ->andWhere(['!=', 'status_code', 200])

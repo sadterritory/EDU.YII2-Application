@@ -26,18 +26,7 @@ class CsvService
         $filterModel = new UrlStatusFilter();
         $filterModel->url = $url;
         $filterModel->status_code = $statusCode;
-        $sort = new Sort([
-            'attributes' => [
-                'created_at' => [
-                    'label' => 'Created At',
-                    'default' => SORT_ASC,
-                ],
-                'updated_at' => [
-                    'label' => 'Updated At',
-                    'default' => SORT_ASC,
-                ],
-            ],
-        ]);
+        $sort = self::getSort();
 
         if ($sortAttribute) {
             $sort->params = ['sort' => $sortAttribute];
@@ -61,7 +50,6 @@ class CsvService
      */
     private static function generateCsv(array $data): void
     {
-        date_default_timezone_set('Asia/Krasnoyarsk');
         $fileName = 'export_' . date('Y-m-d_H-i-s') . '.csv';
         $filePath = Yii::getAlias('@webroot/' . $fileName);
 
@@ -86,4 +74,27 @@ class CsvService
 
         unlink($filePath);
     }
+
+    /**
+     * Creates and returns a Sort object for configuring data sorting.
+     *
+     * @return Sort The Sort object with sorting settings.
+     */
+    public static function getSort(): Sort
+    {
+        return new Sort([
+            'attributes' => [
+                'created_at' => [
+                    'label' => 'Created At',
+                    'default' => SORT_ASC,
+                ],
+                'updated_at' => [
+                    'label' => 'Updated At',
+                    'default' => SORT_ASC,
+                ],
+            ],
+        ]);
+    }
+
+
 }

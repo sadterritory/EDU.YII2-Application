@@ -6,7 +6,6 @@ namespace common\models;
 
 use backend\models\UrlStatusFilter;
 use DateTime;
-use DateTimeZone;
 use Exception;
 use yii\data\Sort;
 
@@ -22,7 +21,14 @@ use yii\data\Sort;
  */
 class UrlStatus extends \yii\db\ActiveRecord
 {
-    public static ?DateTimeZone $dateTimeZone = null;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName(): string
+    {
+        return 'url_status';
+    }
 
     /**
      * {@inheritdoc}
@@ -52,18 +58,6 @@ class UrlStatus extends \yii\db\ActiveRecord
             'status_code' => 'Status Code',
             'query_count' => 'Query Count',
         ];
-    }
-
-
-    /**
-     * Initializes the static $DateTimeZone property if it has not been initialized yet.
-     * Sets the time zone 'Asia/Krasnodar'.
-     */
-    public static function initDateTimeZone(): void
-    {
-        if (self::$dateTimeZone === null) {
-            self::$dateTimeZone = new DateTimeZone('Asia/Krasnoyarsk');
-        }
     }
 
     /**
@@ -112,32 +106,44 @@ class UrlStatus extends \yii\db\ActiveRecord
      */
     public static function validateUrl(string $url): array
     {
-        if (self::$dateTimeZone === null) {
-            self::initDateTimeZone();
-        }
-        $statusCode = null;
         $result = self::find()
             ->where(['hash_string' => self::getHash($url)])
             ->one();
 
         if ($result !== null) {
-            $currentDateTime = new DateTime('now', self::$dateTimeZone);
-            $updatedAt = new DateTime($result->updated_at, self::$dateTimeZone);
-            if ($currentDateTime->getTimestamp() - $updatedAt->getTimestamp() > 600) {
-                $result->updated_at = (new DateTime('now', self::$dateTimeZone))->format('Y-m-d H:i:s');
-                $result->status_code = self::getStatus($url);
-                $statusCode = $result->status_code;
-            } else {
-                $statusCode = $result->status_code;
-            }
-            $result->updateCounters(['query_count' => 1]);
-            $result->save();
+            $statusCode = self::refreshDataAboutUrl($result, $url);
         } else {
             $statusCode = self::createNewNote($url);
         }
         return [
-            $url => ["status_code" => $statusCode],
+            $url => ['status_code' => $statusCode],
         ];
+    }
+
+    /**
+     * Refreshes data about a given URL if the last update was more than 10 minutes ago.
+     * Updates the `updated_at` timestamp, status code, and increments the query count.
+     *
+     * @param object $result The result object containing URL-related data (e.g., `updated_at`, `status_code`).
+     * @param string $url The URL to check the status for.
+     * @return int The status code of the URL after the update or the existing status code if no update was needed.
+     *
+     * @throws \Exception If there is an issue with date/time operations or saving the result object.
+     */
+    public static function refreshDataAboutUrl ($result, $url): int
+    {
+        $currentDateTime = new DateTime();
+        $updatedAt = new DateTime($result->updated_at);
+        if ($currentDateTime->getTimestamp() - $updatedAt->getTimestamp() > 600) {
+            $result->updated_at = (new DateTime())->format('Y-m-d H:i:s');
+            $result->status_code = self::getStatus($url);
+            $statusCode = $result->status_code;
+        } else {
+            $statusCode = $result->status_code;
+        }
+        $result->updateCounters(['query_count' => 1]);
+        $result->save();
+        return $statusCode;
     }
 
     /**
@@ -155,8 +161,8 @@ class UrlStatus extends \yii\db\ActiveRecord
     {
         $newData = new self();
         $newData->hash_string = self::getHash($url);
-        $newData->created_at = (new DateTime('now', self::$dateTimeZone))->format('Y-m-d H:i:s');
-        $newData->updated_at = (new DateTime('now', self::$dateTimeZone))->format('Y-m-d H:i:s');
+        $newData->created_at = (new DateTime())->format('Y-m-d H:i:s');
+        $newData->updated_at = (new DateTime())->format('Y-m-d H:i:s');
         $newData->status_code = self::getStatus($url);
         $newData->url = $url;
         $newData->query_count = 1;
@@ -202,37 +208,6 @@ class UrlStatus extends \yii\db\ActiveRecord
             $statusCode = 0;
         }
         return $statusCode;
-    }
-
-    /**
-     * Set timezone
-     *
-     * @param DateTimeZone $zone The time zone object that needs to be installed.
-     * @return void
-     */
-    public function setDateTimeZone(DateTimeZone $zone): void
-    {
-        self::$dateTimeZone = $zone;
-    }
-
-    /**
-     * Gets a time zone.
-     *
-     * This method returns the current timezone set for the class.
-     *
-     * @return DateTimeZone Timezone object.
-     */
-    public function getDateTimeZone(): DateTimeZone
-    {
-        return self::$dateTimeZone;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName(): string
-    {
-        return 'url_status';
     }
 
 }

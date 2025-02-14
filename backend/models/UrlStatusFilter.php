@@ -28,26 +28,6 @@ class UrlStatusFilter extends Model
     }
 
     /**
-     * Returns filtered and sorted data based on the model's attributes.
-     *
-     * @param bool $lastDay Whether to filter data for the last day.
-     * @param Sort|null $sort The sorting object.
-     * @return array The filtered and sorted data.
-     */
-    public function getFilteredData(bool $lastDay = false, ?Sort $sort = null): array
-    {
-        if ($lastDay) {
-            return UrlStatistics::getUrlsByLastDay();
-        }
-
-        if ($this->validate()) {
-            return UrlStatus::getFilteredData($this, $sort);
-        }
-
-        return UrlStatus::getAllData();
-    }
-
-    /**
      * Creates and returns a Sort object for configuring data sorting.
      *
      * @return Sort The Sort object with sorting settings.
@@ -66,6 +46,26 @@ class UrlStatusFilter extends Model
                 ],
             ],
         ]);
+    }
+
+    /**
+     * Returns filtered and sorted data based on the model's attributes.
+     *
+     * @param bool $isLastDay Whether to filter data for the last day.
+     * @param Sort|null $sort The sorting object.
+     * @return array The filtered and sorted data.
+     */
+    public function getFilteredData(bool $isLastDay = false, ?Sort $sort = null): array
+    {
+        if ($isLastDay) {
+            return UrlStatistics::getUrlsByLastDay();
+        }
+
+        if ($this->validate()) {
+            return UrlStatus::getFilteredData($this, $sort);
+        }
+
+        return UrlStatus::getAllData();
     }
 
 }
