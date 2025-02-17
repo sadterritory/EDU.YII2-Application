@@ -4,6 +4,7 @@ namespace common\services;
 
 use backend\models\UrlStatusFilter;
 use common\models\UrlStatus;
+use DateTime;
 use Yii;
 use yii\data\Sort;
 
@@ -50,7 +51,7 @@ class CsvService
      */
     private static function generateCsv(array $data): void
     {
-        $fileName = 'export_' . date('Y-m-d_H-i-s') . '.csv';
+        $fileName = 'export_' . (new DateTime())->format('Y-m-d H:i:s') . '.csv';
         $filePath = Yii::getAlias('@webroot/' . $fileName);
 
         $file = fopen($filePath, 'w');

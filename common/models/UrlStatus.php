@@ -204,7 +204,7 @@ class UrlStatus extends \yii\db\ActiveRecord
                 preg_match('/^HTTP\/\d\.\d\s(\d{3})/', $statusLine, $match);
                 $statusCode = isset($match[1]) ? (int)$match[1] : null;
             }
-        } catch (\Exception $e) {
+        } catch (Exception) {
             $statusCode = 0;
         }
         return $statusCode;
